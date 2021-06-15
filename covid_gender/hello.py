@@ -71,19 +71,15 @@ def extract_affiliation_name(df):
     return affiliation_name
 
 
-# client = MongoClient(MONGO_URL, username=USERNAME, password=PASSWORD)
-# db = client[MONGO_DB]
-# # mongodb返回指定字段<field> 1: 包括; 0: 排除
-# # result = db.country.find({"country_id": '2140066376'},
-# #                          {'name': 1, 'name_cn': 1})
-# result = db.paper_info.find({"first_country_id": 2140066376},
-#                             {'title': 1, 'paper_id': 1, 'date': 1, 'first_author_id': 1, 'first_affiliation_id': 1}
-#                             )
-# df_result = pd.DataFrame(list(result))
-# df_result.to_csv("../data/paper_info.csv")
+client = MongoClient(MONGO_URL, username=USERNAME, password=PASSWORD)
+db = client[MONGO_DB]
+paper_info = db.paper_info.find({"first_country_id": 2140066376},
+                                {'title': 1, 'paper_id': 1, 'date': 1, 'first_author_id': 1, 'first_affiliation_id': 1}
+                                )
+df_result = pd.DataFrame(list(paper_info))
+df_result.to_csv("../data/paper_info.csv")
 
 df_test = pd.read_csv("../data/paper_info.csv")
 df_test['first_author_fullname'] = df_test.apply(lambda r: extract_author_name(r), axis=1)
 df_test['first_affiliation_name'] = df_test.apply(lambda r: extract_affiliation_name(r), axis=1)
 df_test.to_csv("../data/paper_info_result.csv")
-
